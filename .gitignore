@@ -1,0 +1,18 @@
+# Python cache and virtual environments
+__pycache__/
+*.pyc
+env/
+venv/
+
+# Docker
+*.vhdx
+docker-compose.override.yml
+.vscode/
+.DS_Store
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Logs and temporary files
+*.log
+*.tmp
