@@ -18,6 +18,8 @@ I asume windows here but can't be too hard to figure out alternative methods for
 
 *Download and install <a href="https://www.docker.com/products/docker-desktop/"> Docker Desktop </a>*
 
+Its important that wsl 2 is enabled on windows for this!
+
 #### To verify the installation:
 ```sh
 docker --version
@@ -28,7 +30,7 @@ docker-compose --version
 
 #### Build the Docker Image (First Time Only)
 ```sh
-docker-compose build
+docker-compose build --no-cache
 ```
 
 #### ▶ Start the Container
@@ -37,8 +39,9 @@ docker-compose up -d
 ```
 
 #### 🛠 Access the Running Container
+This should be persistant and make use of more CPU and memory!
 ```sh
-docker exec -it openpose-ml bash
+docker run --name openpose-thesis --memory=8g --cpus=4 -v $(pwd):/workspace -it bscthesis-openpose-ml /bin/bash
 ```
 
 ### **4. 🔄 Updating the Environment**
@@ -53,3 +56,24 @@ docker-compose down
 
 ## .gitignore note
 *The gitignore file is just some example for now but could be more detailed or configured to be more useful as we go!*
+
+## Docker image pull command
+
+```sh
+docker perujuice/openpose-thesis:v1
+```
+
+## Activating the venv
+
+```sh
+cd /usr/local/lib/python3.6/dist-packages/openpose-env
+source bin/activate
+```
+
+
+
+## For using venv instead of docker
+pip install numpy pandas opencv-python tensorflow scikit-learn
+
+## Activating the venv
+.\preprocessing-venv\Scripts\Activate

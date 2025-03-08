@@ -4,12 +4,6 @@ __pycache__/
 env/
 venv/
 
-# Docker
-*.vhdx
-docker-compose.override.yml
-.vscode/
-.DS_Store
-
 # Jupyter Notebook checkpoints
 .ipynb_checkpoints/
 
