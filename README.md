@@ -13,14 +13,20 @@ git clone https://github.com/perujuice/BScThesis.git
 cd BScThesis
 ```
 
-## For isntalling dependencies
+### **2. Setup the virtual environment**
+**Important** I used python version 3.11 because later versions don't work with mediapip
 ```sh
-pip install -r requirements.txt
+py -3.11 -m venv mediapipe-env
 ```
 
-## Activating the venv
+## **3. Activating the venv**
 ```sh
 .\mediapipe-env\Scripts\Activate
+```
+
+## **4. Install dependencies**
+```sh
+pip install -r requirements.txt
 ```
 
 ## Pose landmark model by mediapipe
@@ -73,3 +79,13 @@ Squat form can be evaluated based on key aspects such as:
     Knee Valgus (Inward knee collapse)
     Torso Lean (Excessive forward bending)
     Depth of the Squat (Hip below knee level)
+
+## Extracting the feature keypoints
+```sh
+python preprocessing/process_videos.py
+```
+
+# Example result visualized
+```sh
+python preprocessing/video_landmarks.py
+```

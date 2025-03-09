@@ -84,7 +84,9 @@ def process_video(video_path, output_csv):
             ankle = (lm[LANDMARKS["left_ankle"]].x, lm[LANDMARKS["left_ankle"]].y)
             torso_angle = calculate_angle(shoulder, hip, ankle)
 
-            # Compute Squat Depth (Hip below knee)
+            # Compute Squat Depth (Hip below knee) 
+            # If the hip is above the knee, the squat depth is negative
+            # If the hip is below the knee, the squat depth is positive
             squat_depth = lm[LANDMARKS["left_hip"]].y - lm[LANDMARKS["left_knee"]].y
 
             # Save extracted features

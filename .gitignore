@@ -20,7 +20,7 @@ Thumbs.db
 desktop.ini
 
 # Extracted keypoints and processed data
-assets/extracted_keypoints/*.csv
+assets/extracted_keypoints/**
 
 # Virtual environment and dependency files
 pip-log.txt
