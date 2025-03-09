@@ -2,7 +2,7 @@
 
 ## 🏋️‍♂️ Squat Form Analysis with OpenPose & Machine Learning
 
-This project uses **OpenPose**, **Machine Learning**, and **Computer Vision** to analyze squat form for injury prevention. The environment is fully containerized using **Docker** to ensure reproducibility so that we can easily work together.
+This project uses **MediaPipe**, **Machine Learning**, and **Computer Vision** to analyze squat form for injury prevention. The environment is set up using venv virtual environment to ensure reproducibility by containing all dependencies in there so that we can easily work together.
 
 ## 🚀 Getting Started
 Follow these steps to set up your local development environment.
@@ -13,67 +13,63 @@ git clone https://github.com/perujuice/BScThesis.git
 cd BScThesis
 ```
 
-### **2. Install Docker & Docker Compose**
-I asume windows here but can't be too hard to figure out alternative methods for another OS
-
-*Download and install <a href="https://www.docker.com/products/docker-desktop/"> Docker Desktop </a>*
-
-Its important that wsl 2 is enabled on windows for this!
-
-#### To verify the installation:
+## For isntalling dependencies
 ```sh
-docker --version
-docker-compose --version
-```
-
-### **3. 🔨 Build and Run the environment**
-
-#### Build the Docker Image (First Time Only)
-```sh
-docker-compose build --no-cache
-```
-
-#### ▶ Start the Container
-```sh
-docker-compose up -d
-```
-
-#### 🛠 Access the Running Container
-This should be persistant and make use of more CPU and memory!
-```sh
-docker run --name openpose-thesis --memory=8g --cpus=4 -v $(pwd):/workspace -it bscthesis-openpose-ml /bin/bash
-```
-
-### **4. 🔄 Updating the Environment**
-Whenever changes are made to the Docker setup, rebuild the environment:
-```sh
-docker-compose up --build -d
-```
-To stop the container:
-```sh
-docker-compose down
-```
-
-## .gitignore note
-*The gitignore file is just some example for now but could be more detailed or configured to be more useful as we go!*
-
-## Docker image pull command
-
-```sh
-docker perujuice/openpose-thesis:v1
+pip install -r requirements.txt
 ```
 
 ## Activating the venv
+```sh
+.\mediapipe-env\Scripts\Activate
+```
+
+## Pose landmark model by mediapipe
+
+**This serves as a reference to the landmarks we are interested in.**
+
+![alt text](image.png)
 
 ```sh
-cd /usr/local/lib/python3.6/dist-packages/openpose-env
-source bin/activate
+0 - nose
+1 - left eye (inner)
+2 - left eye
+3 - left eye (outer)
+4 - right eye (inner)
+5 - right eye
+6 - right eye (outer)
+7 - left ear
+8 - right ear
+9 - mouth (left)
+10 - mouth (right)
+11 - left shoulder
+12 - right shoulder
+13 - left elbow
+14 - right elbow
+15 - left wrist
+16 - right wrist
+17 - left pinky
+18 - right pinky
+19 - left index
+20 - right index
+21 - left thumb
+22 - right thumb
+23 - left hip
+24 - right hip
+25 - left knee
+26 - right knee
+27 - left ankle
+28 - right ankle
+29 - left heel
+30 - right heel
+31 - left foot index
+32 - right foot index
 ```
 
 
+## Analysis of the squat before preprocessing raw data
 
-## For using venv instead of docker
-pip install numpy pandas opencv-python tensorflow scikit-learn
+Squat form can be evaluated based on key aspects such as:
 
-## Activating the venv
-.\preprocessing-venv\Scripts\Activate
+    Knee Valgus (Inward knee collapse)
+    Torso Lean (Excessive forward bending)
+    Depth of the Squat (Hip below knee level)

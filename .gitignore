@@ -1,12 +1,36 @@
 # Python cache and virtual environments
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+*.swp
 env/
 venv/
-
-# Jupyter Notebook checkpoints
-.ipynb_checkpoints/
+mediapipe-env/
 
 # Logs and temporary files
 *.log
 *.tmp
+*.bak
+*.cache
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Extracted keypoints and processed data
+assets/extracted_keypoints/*.csv
+
+# Virtual environment and dependency files
+pip-log.txt
+pip-delete-this-directory.txt
+
+# VS Code and editor settings
+.vscode/
+*.code-workspace
+
+# Build and compiled files
+build/
+dist/
+*.egg-info/

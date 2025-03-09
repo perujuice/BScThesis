@@ -1,8 +1,4 @@
+mediapipe
+opencv-python
 numpy
 pandas
-scipy
-matplotlib
-opencv-python
-torch
-tensorflow
-scikit-learn
