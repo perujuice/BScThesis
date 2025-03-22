@@ -1,5 +1,8 @@
 # BScThesis
 
+
+# Missing data in raw data (bad77 doesnt exist, good15 and good68 dont exist )
+
 ## 🏋️‍♂️ Squat Form Analysis with OpenPose & Machine Learning
 
 This project uses **MediaPipe**, **Machine Learning**, and **Computer Vision** to analyze squat form for injury prevention. The environment is set up using venv virtual environment to ensure reproducibility by containing all dependencies in there so that we can easily work together.
@@ -27,6 +30,11 @@ py -3.11 -m venv mediapipe-env
 ## **4. Install dependencies**
 ```sh
 pip install -r requirements.txt
+```
+
+## Now registering the venv as a jupyter kernel
+```sh
+python -m ipykernel install --user --name=mediapipe-env --display-name "Python (mediapipe-env)"
 ```
 
 ## Pose landmark model by mediapipe
