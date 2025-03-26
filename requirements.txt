@@ -1,9 +1,10 @@
 mediapipe
 opencv-python
 numpy
-panda
+pandas
 jupyter
 scikit-learn
 torch
 keras
 tensorflow
+scikeras

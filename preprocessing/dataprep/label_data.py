@@ -20,14 +20,24 @@ for category, label in categories.items():
             # Read CSV file
             df = pd.read_csv(file_path)
 
-            # Ensure required columns exist
-            if {"knee_valgus_ratio", "torso_angle", "squat_depth"}.issubset(df.columns):
-                # Feature engineering: Extract more meaningful squat phase statistics
+            # Check required columns
+            expected_columns = {
+                "valgus_angle_left", "valgus_angle_right",
+                "torso_angle", "squat_depth"
+            }
+            if expected_columns.issubset(df.columns):
+                # Feature engineering: Summary stats for left/right valgus and asymmetry
                 feature_set = {
-                    "knee_valgus_mean": df["knee_valgus_ratio"].mean(),
-                    "knee_valgus_max": df["knee_valgus_ratio"].max(),
-                    "knee_valgus_min": df["knee_valgus_ratio"].min(),
-                    
+                    "valgus_left_mean": df["valgus_angle_left"].mean(),
+                    "valgus_left_max": df["valgus_angle_left"].max(),
+                    "valgus_left_min": df["valgus_angle_left"].min(),
+
+                    "valgus_right_mean": df["valgus_angle_right"].mean(),
+                    "valgus_right_max": df["valgus_angle_right"].max(),
+                    "valgus_right_min": df["valgus_angle_right"].min(),
+
+                    "valgus_asymmetry": abs(df["valgus_angle_left"].mean() - df["valgus_angle_right"].mean()),
+
                     "torso_angle_mean": df["torso_angle"].mean(),
                     "torso_angle_max": df["torso_angle"].max(),
                     "torso_angle_min": df["torso_angle"].min(),
@@ -36,16 +46,14 @@ for category, label in categories.items():
                     "squat_depth_max": df["squat_depth"].max(),
                     "squat_depth_min": df["squat_depth"].min(),
 
-                    "label": label  # Assign squat label (Good = 1, Bad = 0)
+                    "label": label
                 }
 
-                # Append to dataset
                 all_data.append(feature_set)
 
-# Convert to DataFrame
+# Build final DataFrame and save
 final_df = pd.DataFrame(all_data)
-
-# Save to CSV for training models
-final_df.to_csv("squat_dataset.csv", index=False)
+os.makedirs("preprocessing", exist_ok=True)
+final_df.to_csv("preprocessing/squat_dataset.csv", index=False)
 
 print(f"✅ Successfully processed {len(final_df)} squat samples into squat_dataset.csv!")

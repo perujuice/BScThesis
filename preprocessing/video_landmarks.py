@@ -1,95 +1,84 @@
 import cv2
 import mediapipe as mp
-import pandas as pd
-import os
+import numpy as np
 
-# Paths
-RAW_DATA_DIR = "assets/raw_data"
-EXTRACTED_KEYPOINTS_DIR = "assets/extracted_keypoints"
-OUTPUT_VIDEO_DIR = "assets/output_videos"  # Directory to save the output video
-
-# Initialize MediaPipe Pose
+# MediaPipe setup
 mp_pose = mp.solutions.pose
 mp_drawing = mp.solutions.drawing_utils
 pose = mp_pose.Pose()
 
-def visualize_and_save_landmarks_as_mp4(video_path, keypoints_csv, output_path, slow_factor=2, loop_count=5):
-    """Process video, draw pose landmarks, overlay extracted features, slow it down, and save as MP4."""
+# Landmarks indices
+LANDMARKS = {
+    "left_hip": 23, "right_hip": 24,
+    "left_knee": 25, "right_knee": 26,
+    "left_ankle": 27, "right_ankle": 28,
+    "left_shoulder": 11, "right_shoulder": 12
+}
 
-    # Read extracted keypoints
-    df = pd.read_csv(keypoints_csv)
+def calculate_angle(a, b, c):
+    """Calculate angle at point b given three 2D points (a-b-c)."""
+    a, b, c = np.array(a), np.array(b), np.array(c)
+    ba = a - b
+    bc = c - b
+    cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc) + 1e-6)
+    angle = np.arccos(np.clip(cosine_angle, -1.0, 1.0))
+    return np.degrees(angle)
 
-    # Open video capture
-    cap = cv2.VideoCapture(video_path)
-    frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-    frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = int(cap.get(cv2.CAP_PROP_FPS)) // slow_factor  # Slow down by reducing FPS
+def show_video_with_features(video_path):
+    while True:  # Loop playback
+        cap = cv2.VideoCapture(video_path)
 
-    # Initialize VideoWriter to save the output video
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")  # Codec for MP4
-    out = cv2.VideoWriter(output_path, fourcc, fps, (frame_width, frame_height))
+        if not cap.isOpened():
+            print("❌ Failed to open video.")
+            break
 
-    frames = []  # Store frames for looping
-    frame_count = 0
+        while cap.isOpened():
+            ret, frame = cap.read()
+            if not ret:
+                break  # End of video, exit inner loop and reopen
 
-    while cap.isOpened():
-        ret, frame = cap.read()
-        if not ret or frame_count >= len(df):
-            break  # Stop when video ends or all frames are processed
+            rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = pose.process(rgb_frame)
 
-        # Convert to RGB (required for MediaPipe)
-        rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        results = pose.process(rgb_frame)
+            if results.pose_landmarks:
+                lm = results.pose_landmarks.landmark
+                mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
-        # Draw landmarks using MediaPipe (Live Detection)
-        if results.pose_landmarks:
-            mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+                # Torso angle (shoulder–hip–ankle)
+                shoulder = (lm[LANDMARKS["left_shoulder"]].x, lm[LANDMARKS["left_shoulder"]].y)
+                hip = (lm[LANDMARKS["left_hip"]].x, lm[LANDMARKS["left_hip"]].y)
+                ankle = (lm[LANDMARKS["left_ankle"]].x, lm[LANDMARKS["left_ankle"]].y)
+                torso_angle = calculate_angle(shoulder, hip, ankle)
 
-        # Extract features for this frame (From CSV)
-        frame_data = df.iloc[frame_count]
-        knee_valgus = frame_data["knee_valgus_ratio"]
-        torso_angle = frame_data["torso_angle"]
-        squat_depth = frame_data["squat_depth"]
+                # Knee valgus (hip–knee–ankle) angles
+                hip_left = (lm[LANDMARKS["left_hip"]].x, lm[LANDMARKS["left_hip"]].y)
+                knee_left = (lm[LANDMARKS["left_knee"]].x, lm[LANDMARKS["left_knee"]].y)
+                ankle_left = (lm[LANDMARKS["left_ankle"]].x, lm[LANDMARKS["left_ankle"]].y)
+                valgus_left = calculate_angle(hip_left, knee_left, ankle_left)
 
-        # Overlay extracted features
-        cv2.putText(frame, f"Knee Valgus: {knee_valgus:.2f}", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-        cv2.putText(frame, f"Torso Angle: {torso_angle:.2f}", (50, 80), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
-        cv2.putText(frame, f"Squat Depth: {squat_depth:.2f}", (50, 110), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                hip_right = (lm[LANDMARKS["right_hip"]].x, lm[LANDMARKS["right_hip"]].y)
+                knee_right = (lm[LANDMARKS["right_knee"]].x, lm[LANDMARKS["right_knee"]].y)
+                ankle_right = (lm[LANDMARKS["right_ankle"]].x, lm[LANDMARKS["right_ankle"]].y)
+                valgus_right = calculate_angle(hip_right, knee_right, ankle_right)
 
-        # Add the frame multiple times to slow down the video
-        for _ in range(slow_factor):
-            frames.append(frame)
+                squat_depth = lm[LANDMARKS["left_hip"]].y - lm[LANDMARKS["left_knee"]].y
 
-        frame_count += 1
+                # Display overlays
+                cv2.putText(frame, f"Valgus L: {valgus_left:.1f}", (50, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 200, 0), 2)
+                cv2.putText(frame, f"Valgus R: {valgus_right:.1f}", (50, 70), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 200, 0), 2)
+                cv2.putText(frame, f"Torso Angle: {torso_angle:.1f}", (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 255, 0), 2)
+                cv2.putText(frame, f"Squat Depth: {squat_depth:.3f}", (50, 130), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 150, 255), 2)
 
-    # Loop the video by appending the frames multiple times
-    for _ in range(loop_count):
-        for frame in frames:
-            out.write(frame)
+            cv2.imshow("Squat Feature Visualizer (Press 'q' to quit)", frame)
 
-    # Release resources
-    cap.release()
-    out.release()
-    print(f"✅ MP4 video saved at: {output_path}")
+            if cv2.waitKey(10) & 0xFF == ord('q'):
+                cap.release()
+                cv2.destroyAllWindows()
+                return  # Exit completely
 
-# Function to process and save a sample squat video as MP4
-def save_sample_squat_video():
-    """Choose a sample squat video, process it, and save the output as MP4."""
-    sample_video = os.path.join(RAW_DATA_DIR, "dataset-good", "good1.mov")  # Change filename if needed
-    sample_csv = os.path.join(EXTRACTED_KEYPOINTS_DIR, "dataset-good", "good1.csv")  # Adjust filename
-    output_video = os.path.join(OUTPUT_VIDEO_DIR, "good1_processed.mp4")  # Output file path
+        cap.release()  # Finished the video — go to next loop
 
-    # Ensure output directory exists
-    os.makedirs(OUTPUT_VIDEO_DIR, exist_ok=True)
-
-    if os.path.exists(sample_video) and os.path.exists(sample_csv):
-        try:
-            visualize_and_save_landmarks_as_mp4(sample_video, sample_csv, output_video, slow_factor=2, loop_count=5)
-        except KeyboardInterrupt:
-            print("\n⏹️ Interrupted by user (Ctrl + C)")
-            cv2.destroyAllWindows()
-    else:
-        print("❌ Sample video or keypoint CSV not found!")
-
+# Run it
 if __name__ == "__main__":
-    save_sample_squat_video()
+    video_path = "assets/raw_data/dataset-good/good1.mov"  # Change this if needed
+    show_video_with_features(video_path)

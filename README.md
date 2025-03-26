@@ -5,7 +5,7 @@
 
 ## 🏋️‍♂️ Squat Form Analysis with OpenPose & Machine Learning
 
-This project uses **MediaPipe**, **Machine Learning**, and **Computer Vision** to analyze squat form for injury prevention. The environment is set up using venv virtual environment to ensure reproducibility by containing all dependencies in there so that we can easily work together.
+This project uses **Machine Learning**, and **Computer Vision (Mediapipe)** to analyze squat form. The environment is set up using venv virtual environment to ensure reproducibility by containing all dependencies in there so that we can easily work together.
 
 ## 🚀 Getting Started
 Follow these steps to set up your local development environment.
@@ -37,11 +37,13 @@ pip install -r requirements.txt
 python -m ipykernel install --user --name=mediapipe-env --display-name "Python (mediapipe-env)"
 ```
 
+** Might have to install jupyter globally as well! **
+
 ## Pose landmark model by mediapipe
 
 **This serves as a reference to the landmarks we are interested in.**
 
-![alt text](image.png)
+![alt text](mediapipe.png)
 
 ```sh
 0 - nose
@@ -85,6 +87,7 @@ python -m ipykernel install --user --name=mediapipe-env --display-name "Python (
 Squat form can be evaluated based on key aspects such as:
 
     Knee Valgus (Inward knee collapse)
+        - Seperately for each leg (left valgus angle, right valgus angle)
     Torso Lean (Excessive forward bending)
     Depth of the Squat (Hip below knee level)
 

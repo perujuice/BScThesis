@@ -1,40 +1,38 @@
-import numpy as np
 import os
+import numpy as np
 import pandas as pd
-from sklearn.model_selection import train_test_split
+from tensorflow.keras.preprocessing.sequence import pad_sequences
 
-# Paths to processed keypoint data
+# Path to your dataset
 DATA_DIR = "assets/extracted_keypoints"
 
-# Define dataset categories
-categories = {"dataset-good": 1, "dataset-bad": 0}  # 1 = good squat, 0 = bad squat
+# Label mapping
+categories = {"dataset-good": 1, "dataset-bad": 0}
 
-X_data, y_labels = [], []
+X_data, y_labels, sequence_lengths = [], [], []
 
 for category, label in categories.items():
-    category_path = os.path.join(DATA_DIR, category)
-
-    for filename in os.listdir(category_path):
+    folder = os.path.join(DATA_DIR, category)
+    
+    for filename in os.listdir(folder):
         if filename.endswith(".csv"):
-            file_path = os.path.join(category_path, filename)
-
-            # Read CSV file
-            df = pd.read_csv(file_path)
-
-            # Ensure expected columns exist
+            df = pd.read_csv(os.path.join(folder, filename))
+            
+            # Validate required columns
             if {"knee_valgus_ratio", "torso_angle", "squat_depth"}.issubset(df.columns):
-                # Convert DataFrame to NumPy array (sequence of frames)
-                squat_sequence = df[["knee_valgus_ratio", "torso_angle", "squat_depth"]].values
-
-                # Store the sequence and corresponding label
-                X_data.append(squat_sequence)
+                sequence = df[["knee_valgus_ratio", "torso_angle", "squat_depth"]].values.astype("float32")
+                X_data.append(sequence)
                 y_labels.append(label)
+                sequence_lengths.append(len(sequence))
 
-# Convert lists to NumPy arrays
-X_data = np.array(X_data, dtype=np.float32)
+# Pad sequences to the same length
+max_len = max(sequence_lengths)
+X_padded = pad_sequences(X_data, maxlen=max_len, padding="post", dtype="float32")
+
+# Convert labels to NumPy array
 y_labels = np.array(y_labels, dtype=np.int32)
 
-# Split dataset into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X_data, y_labels, test_size=0.2, random_state=42, stratify=y_labels)
+# Save to .npz
+np.savez("squat_sequences.npz", X=X_padded, y=y_labels)
 
-print(f"✅ Data ready! X_train: {X_train.shape}, X_test: {X_test.shape}, y_train: {y_train.shape}, y_test: {y_test.shape}")
+print(f"✅ Saved padded sequence data: X shape = {X_padded.shape}, y shape = {y_labels.shape}")

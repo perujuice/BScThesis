@@ -73,10 +73,22 @@ def process_video(video_path, output_csv):
             # Get landmark positions
             lm = results.pose_landmarks.landmark
 
-            # Compute Knee Valgus (Inward Collapse)
-            knee_distance = abs(lm[LANDMARKS["left_knee"]].x - lm[LANDMARKS["right_knee"]].x)
-            hip_distance = abs(lm[LANDMARKS["left_hip"]].x - lm[LANDMARKS["right_hip"]].x)
-            knee_valgus_ratio = knee_distance / hip_distance if hip_distance != 0 else 0
+            '''
+            For the knee valgus logic, I referred to the following paper:
+            "The back squat: A proposed assessment of functional deficits and technical factors that limit performance"
+            https://pmc.ncbi.nlm.nih.gov/articles/PMC4262933/#S13
+            '''
+
+            # Compute Knee Valgus (Frontal Plane Knee Angle) per leg
+            hip_left = (lm[LANDMARKS["left_hip"]].x, lm[LANDMARKS["left_hip"]].y)
+            knee_left = (lm[LANDMARKS["left_knee"]].x, lm[LANDMARKS["left_knee"]].y)
+            ankle_left = (lm[LANDMARKS["left_ankle"]].x, lm[LANDMARKS["left_ankle"]].y)
+            valgus_angle_left = calculate_angle(hip_left, knee_left, ankle_left)
+
+            hip_right = (lm[LANDMARKS["right_hip"]].x, lm[LANDMARKS["right_hip"]].y)
+            knee_right = (lm[LANDMARKS["right_knee"]].x, lm[LANDMARKS["right_knee"]].y)
+            ankle_right = (lm[LANDMARKS["right_ankle"]].x, lm[LANDMARKS["right_ankle"]].y)
+            valgus_angle_right = calculate_angle(hip_right, knee_right, ankle_right)
 
             # Compute Torso Lean Angle
             shoulder = (lm[LANDMARKS["left_shoulder"]].x, lm[LANDMARKS["left_shoulder"]].y)
@@ -90,7 +102,9 @@ def process_video(video_path, output_csv):
             squat_depth = lm[LANDMARKS["left_hip"]].y - lm[LANDMARKS["left_knee"]].y
 
             # Save extracted features
-            frame_data["knee_valgus_ratio"] = knee_valgus_ratio
+            # Save both left and right knee valgus angles
+            frame_data["valgus_angle_left"] = valgus_angle_left
+            frame_data["valgus_angle_right"] = valgus_angle_right
             frame_data["torso_angle"] = torso_angle
             frame_data["squat_depth"] = squat_depth
             data.append(frame_data)
