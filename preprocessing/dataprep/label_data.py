@@ -5,7 +5,12 @@ import pandas as pd
 DATA_DIR = "assets/extracted_keypoints"
 
 # Define dataset categories
-categories = {"dataset-good": 1, "dataset-bad": 0}  # 1 = good squat, 0 = bad squat
+categories = {
+    "dataset-good": 1,
+    "good-new": 1,
+    "dataset-bad": 0,
+    "bad-new": 0
+}  # 1 = good squat, 0 = bad squat
 
 # Initialize an empty list to store all rows
 all_data = []

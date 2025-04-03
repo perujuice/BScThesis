@@ -10,7 +10,13 @@ OUTPUT_DIR = "preprocessing"
 TRAIN_CSV = os.path.join(OUTPUT_DIR, "squat_dataset_train_augmented_and_original_normalized.csv")
 TEST_CSV = os.path.join(OUTPUT_DIR, "squat_dataset_test_original_normalized.csv")
 
-categories = {"dataset-good": 1, "dataset-bad": 0}
+categories = {
+    "dataset-good": 1,
+    "good-new": 1,
+    "dataset-bad": 0,
+    "bad-new": 0
+}
+
 JOINTS = [
     "left_hip", "right_hip",
     "left_knee", "right_knee",

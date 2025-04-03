@@ -7,7 +7,12 @@ from sklearn.preprocessing import MinMaxScaler
 DATA_DIR = "assets/extracted_keypoints_raw"
 
 # Define dataset categories
-categories = {"dataset-good": 1, "dataset-bad": 0}
+categories = {
+    "dataset-good": 1,
+    "good-new": 1,
+    "dataset-bad": 0,
+    "bad-new": 0
+}
 
 # Joints to process (as in your CSVs)
 JOINTS = [

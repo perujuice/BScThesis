@@ -126,18 +126,27 @@ def process_video_raw_features(video_path, output_csv):
 # The extracted keypoints and squat features are saved to CSV files in the output directory.
 # The output directory is created if it does not exist.
 def process_all_videos():
-    """Process all videos in dataset-good and dataset-bad"""
-    for category in ["dataset-good", "dataset-bad"]:
+    """Process only new videos in 'good-new' and 'bad-new' folders."""
+    new_categories = ["good-new", "bad-new"]
+
+    for category in new_categories:
         input_dir = os.path.join(RAW_DATA_DIR, category)
         output_dir = os.path.join(OUTPUT_DIR, category)
-
         os.makedirs(output_dir, exist_ok=True)
 
-        for video_file in sorted(os.listdir(input_dir)):  # Sort for chronological order
-            if video_file.endswith(".mov"):
-                video_path = os.path.join(input_dir, video_file)
-                output_csv = os.path.join(output_dir, video_file.replace(".mov", ".csv"))
-                process_video_raw_features(video_path, output_csv)
+        for video_file in sorted(os.listdir(input_dir)):
+            if not video_file.endswith((".mov", ".mp4")):
+                continue
+
+            input_path = os.path.join(input_dir, video_file)
+            output_filename = video_file.rsplit(".", 1)[0] + ".csv"
+            output_path = os.path.join(output_dir, output_filename)
+
+            if os.path.exists(output_path):
+                print(f"⏩ Skipping {video_file} (already processed)")
+                continue
+
+            process_video_raw_features(input_path, output_path)
 
 
 if __name__ == "__main__":
