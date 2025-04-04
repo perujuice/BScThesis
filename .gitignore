@@ -22,6 +22,7 @@ desktop.ini
 # Extracted keypoints and processed data
 assets/extracted_keypoints/**
 assets/extracted_keypoints_raw/**
+assets/raw_data/**
 
 # Virtual environment and dependency files
 pip-log.txt

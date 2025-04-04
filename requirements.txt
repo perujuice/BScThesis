@@ -9,3 +9,4 @@ keras
 tensorflow
 scikeras
 tqdm
+shapely
