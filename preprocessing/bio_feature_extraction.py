@@ -17,7 +17,8 @@ LANDMARKS = {
     "left_hip": 23, "right_hip": 24,
     "left_knee": 25, "right_knee": 26,
     "left_ankle": 27, "right_ankle": 28,
-    "left_shoulder": 11, "right_shoulder": 12
+    "left_shoulder": 11, "right_shoulder": 12,
+    "left_foot": 31, "right_foot": 32
 }
 
 '''
@@ -79,34 +80,63 @@ def process_video(video_path, output_csv):
             https://pmc.ncbi.nlm.nih.gov/articles/PMC4262933/#S13
             '''
 
-            # Compute Knee Valgus (Frontal Plane Knee Angle) per leg
+            # --- Frontal Plane Knee Angles (per leg) ---
             hip_left = (lm[LANDMARKS["left_hip"]].x, lm[LANDMARKS["left_hip"]].y)
             knee_left = (lm[LANDMARKS["left_knee"]].x, lm[LANDMARKS["left_knee"]].y)
             ankle_left = (lm[LANDMARKS["left_ankle"]].x, lm[LANDMARKS["left_ankle"]].y)
-            valgus_angle_left = calculate_angle(hip_left, knee_left, ankle_left)
+            knee_flexion_left = calculate_angle(hip_left, knee_left, ankle_left)
 
             hip_right = (lm[LANDMARKS["right_hip"]].x, lm[LANDMARKS["right_hip"]].y)
             knee_right = (lm[LANDMARKS["right_knee"]].x, lm[LANDMARKS["right_knee"]].y)
             ankle_right = (lm[LANDMARKS["right_ankle"]].x, lm[LANDMARKS["right_ankle"]].y)
-            valgus_angle_right = calculate_angle(hip_right, knee_right, ankle_right)
+            knee_flexion_right = calculate_angle(hip_right, knee_right, ankle_right)
 
-            # Compute Torso Lean Angle
-            shoulder = (lm[LANDMARKS["left_shoulder"]].x, lm[LANDMARKS["left_shoulder"]].y)
-            hip = (lm[LANDMARKS["left_hip"]].x, lm[LANDMARKS["left_hip"]].y)
-            ankle = (lm[LANDMARKS["left_ankle"]].x, lm[LANDMARKS["left_ankle"]].y)
-            torso_angle = calculate_angle(shoulder, hip, ankle)
+            # --- Knee Valgus Ratio (medial collapse indicator) ---
+            knee_x_dist = abs(lm[LANDMARKS["left_knee"]].x - lm[LANDMARKS["right_knee"]].x)
+            ankle_x_dist = abs(lm[LANDMARKS["left_ankle"]].x - lm[LANDMARKS["right_ankle"]].x)
+            valgus_ratio = knee_x_dist / ankle_x_dist if ankle_x_dist > 0 else 0
+
+
+            # Get 3D joint coordinates
+            hip = np.array([
+                lm[LANDMARKS["left_hip"]].x,
+                lm[LANDMARKS["left_hip"]].y,
+                lm[LANDMARKS["left_hip"]].z
+            ])
+            shoulder = np.array([
+                lm[LANDMARKS["left_shoulder"]].x,
+                lm[LANDMARKS["left_shoulder"]].y,
+                lm[LANDMARKS["left_shoulder"]].z
+            ])
+
+            # Vector from hip to shoulder
+            torso_vector = shoulder - hip
+
+            # Vertical unit vector (pointing up in image space)
+            vertical_vector = np.array([0, -1, 0])
+
+            # Calculate torso lean angle relative to vertical
+            cosine_angle = np.dot(torso_vector, vertical_vector) / (
+                np.linalg.norm(torso_vector) * np.linalg.norm(vertical_vector)
+            )
+            torso_angle = np.degrees(np.arccos(np.clip(cosine_angle, -1.0, 1.0)))
+
 
             # Compute Squat Depth (Hip below knee) 
             # If the hip is above the knee, the squat depth is negative
             # If the hip is below the knee, the squat depth is positive
             squat_depth = lm[LANDMARKS["left_hip"]].y - lm[LANDMARKS["left_knee"]].y
 
+            foot_width = abs(lm[LANDMARKS["left_foot"]].x - lm[LANDMARKS["right_foot"]].x)
+
             # Save extracted features
             # Save both left and right knee valgus angles
-            frame_data["valgus_angle_left"] = valgus_angle_left
-            frame_data["valgus_angle_right"] = valgus_angle_right
+            frame_data["vknee_flexion_left"] = knee_flexion_left
+            frame_data["knee_flexion_right"] = knee_flexion_right
+            frame_data["valgus_ratio"] = valgus_ratio
             frame_data["torso_angle"] = torso_angle
             frame_data["squat_depth"] = squat_depth
+            frame_data["foot_width"] = foot_width
             data.append(frame_data)
 
         frame_count += 1
@@ -126,9 +156,9 @@ def process_video(video_path, output_csv):
 # The output directory is created if it does not exist.
 def process_all_videos():
     """Process only new videos in 'good-new' and 'bad-new' folders."""
-    new_categories = ["good-new", "bad-new"]
+    categories = ["good-new", "bad-new", "dataset-good", "dataset-bad"]
 
-    for category in new_categories:
+    for category in categories:
         input_dir = os.path.join(RAW_DATA_DIR, category)
         output_dir = os.path.join(OUTPUT_DIR, category)
         os.makedirs(output_dir, exist_ok=True)

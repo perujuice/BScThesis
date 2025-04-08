@@ -1,12 +1,10 @@
 import os
 import pandas as pd
-import numpy as np
-from sklearn.preprocessing import MinMaxScaler
 
 # Paths to processed keypoint data
 DATA_DIR = "assets/extracted_keypoints_raw"
 
-# Define dataset categories
+# Define dataset categories and labels
 categories = {
     "dataset-good": 1,
     "good-new": 1,
@@ -14,7 +12,7 @@ categories = {
     "bad-new": 0
 }
 
-# Joints to process (as in your CSVs)
+# Joints to extract
 JOINTS = [
     "left_hip", "right_hip",
     "left_knee", "right_knee",
@@ -26,8 +24,7 @@ JOINTS = [
 expected_angles = {
     "left_knee_angle", "right_knee_angle",
     "left_hip_angle", "right_hip_angle",
-    "left_ankle_angle", "right_ankle_angle",
-    "trunk_angle"
+    "left_ankle_angle", "right_ankle_angle"
 }
 
 # Collect all feature rows
@@ -41,7 +38,7 @@ for category, label in categories.items():
             file_path = os.path.join(category_path, filename)
             df = pd.read_csv(file_path)
 
-            # Verify expected columns exist
+            # Verify expected columns
             if all(
                 f"{joint}_{axis}" in df.columns
                 for joint in JOINTS
@@ -50,19 +47,21 @@ for category, label in categories.items():
 
                 feature_set = {}
 
-                # Joint coordinate features (mean, max, min)
+                # Joint coordinate features
                 for joint in JOINTS:
                     for axis in ["x", "y", "z"]:
                         col = f"{joint}_{axis}"
                         feature_set[f"{col}_mean"] = df[col].mean()
-                        feature_set[f"{col}_max"] = df[col].max()
+                        feature_set[f"{col}_std"] = df[col].std()
                         feature_set[f"{col}_min"] = df[col].min()
+                        feature_set[f"{col}_max"] = df[col].max()
 
-                # Joint angle features (mean, max, min)
+                # Joint angle features
                 for angle in expected_angles:
                     feature_set[f"{angle}_mean"] = df[angle].mean()
-                    feature_set[f"{angle}_max"] = df[angle].max()
+                    feature_set[f"{angle}_std"] = df[angle].std()
                     feature_set[f"{angle}_min"] = df[angle].min()
+                    feature_set[f"{angle}_max"] = df[angle].max()
 
                 # Add label
                 feature_set["label"] = label
@@ -71,20 +70,8 @@ for category, label in categories.items():
 # Convert to DataFrame
 final_df = pd.DataFrame(all_data)
 
-# Separate features and labels
-features = final_df.drop(columns="label")
-labels = final_df["label"]
-
-# Normalize features
-scaler = MinMaxScaler()
-features_normalized = scaler.fit_transform(features)
-
-# Recombine
-normalized_df = pd.DataFrame(features_normalized, columns=features.columns)
-normalized_df["label"] = labels.values
-
-# Save final normalized dataset
+# Save final dataset (non-normalized)
 os.makedirs("preprocessing", exist_ok=True)
-normalized_df.to_csv("preprocessing/squat_dataset_3d_raw_normalized.csv", index=False)
+final_df.to_csv("preprocessing/squat_dataset_3d_raw.csv", index=False)
 
-print(f"✅ Processed and normalized {normalized_df.shape[0]} samples to squat_dataset_3d_raw_normalized.csv")
+print(f"✅ Processed and saved {final_df.shape[0]} squat samples to squat_dataset_3d_raw.csv")

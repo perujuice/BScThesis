@@ -4,17 +4,17 @@
 ```sh
               precision    recall  f1-score   support
 
-           0       0.92      0.90      0.91        39
-           1       0.89      0.92      0.91        37
+           0       0.92      0.88      0.90        26
+           1       0.88      0.92      0.90        25
 
-    accuracy                           0.91        76
-   macro avg       0.91      0.91      0.91        76
-weighted avg       0.91      0.91      0.91        76
+    accuracy                           0.90        51
+   macro avg       0.90      0.90      0.90        51
+weighted avg       0.90      0.90      0.90        51
 
 Confusion Matrix:
- [[35  4]
- [ 3 34]]
-ROC-AUC Score: 0.9730
+ [[23  3]
+ [ 2 23]]
+🏆 ROC-AUC Score: 0.9708
 ```
 
 # Random Forest with Biomechanically handcrafter features, training set augmented
@@ -41,17 +41,17 @@ ROC-AUC Score: 0.9913
 ```sh
               precision    recall  f1-score   support
 
-           0       0.92      0.90      0.91        39
-           1       0.89      0.92      0.91        37
+           0       0.96      0.88      0.92        26
+           1       0.89      0.96      0.92        25
 
-    accuracy                           0.91        76
-   macro avg       0.91      0.91      0.91        76
-weighted avg       0.91      0.91      0.91        76
+    accuracy                           0.92        51
+   macro avg       0.92      0.92      0.92        51
+weighted avg       0.92      0.92      0.92        51
 
 Confusion Matrix:
- [[35  4]
- [ 3 34]]
-ROC-AUC Score: 0.9730
+ [[23  3]
+ [ 1 24]]
+ ROC-AUC Score: 0.9838
 ```
 
 # Random Forest with raw features (3D joint coordinates, joint angles), training set augmented

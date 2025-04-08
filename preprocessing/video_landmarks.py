@@ -42,7 +42,33 @@ def show_video_with_features(video_path):
 
             if results.pose_landmarks:
                 lm = results.pose_landmarks.landmark
+
+                # Draw all landmarks and connections with default color
                 mp_drawing.draw_landmarks(frame, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
+
+                # Highlight specific landmarks with different colors
+                landmark_colors = {
+                    "shoulders": (0, 255, 0),  # Green for shoulders
+                    "hips": (255, 0, 0),       # Blue for hips
+                    "knees": (0, 0, 255),      # Red for knees
+                    "ankles": (255, 255, 0)    # Yellow for ankles
+                }
+
+                # Group landmarks by type
+                landmark_groups = {
+                    "shoulders": [LANDMARKS["left_shoulder"], LANDMARKS["right_shoulder"]],
+                    "hips": [LANDMARKS["left_hip"], LANDMARKS["right_hip"]],
+                    "knees": [LANDMARKS["left_knee"], LANDMARKS["right_knee"]],
+                    "ankles": [LANDMARKS["left_ankle"], LANDMARKS["right_ankle"]]
+                }
+
+                # Loop through each group and draw landmarks with the corresponding color
+                for group, indices in landmark_groups.items():
+                    color = landmark_colors[group]
+                    for idx in indices:
+                        landmark = lm[idx]
+                        cx, cy = int(landmark.x * frame.shape[1]), int(landmark.y * frame.shape[0])
+                        cv2.circle(frame, (cx, cy), 8, color, -1)  # Draw landmarks with the group color
 
                 # Torso angle (shoulder–hip–ankle)
                 shoulder = (lm[LANDMARKS["left_shoulder"]].x, lm[LANDMARKS["left_shoulder"]].y)

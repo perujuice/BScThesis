@@ -1,7 +1,8 @@
 import os
 import pandas as pd
+from sklearn.model_selection import train_test_split
 
-# Paths to processed keypoint data
+# Paths to processed keypoint data (handcrafted features)
 DATA_DIR = "assets/extracted_keypoints"
 
 # Define dataset categories
@@ -10,9 +11,15 @@ categories = {
     "good-new": 1,
     "dataset-bad": 0,
     "bad-new": 0
-}  # 1 = good squat, 0 = bad squat
+}
 
-# Initialize an empty list to store all rows
+# Expected feature columns in each CSV
+expected_columns = {
+    "vknee_flexion_left", "knee_flexion_right",
+    "valgus_ratio", "torso_angle", "squat_depth", "foot_width"
+}
+
+# Initialize data collector
 all_data = []
 
 for category, label in categories.items():
@@ -21,44 +28,39 @@ for category, label in categories.items():
     for filename in os.listdir(category_path):
         if filename.endswith(".csv"):
             file_path = os.path.join(category_path, filename)
-
-            # Read CSV file
             df = pd.read_csv(file_path)
 
-            # Check required columns
-            expected_columns = {
-                "valgus_angle_left", "valgus_angle_right",
-                "torso_angle", "squat_depth"
-            }
             if expected_columns.issubset(df.columns):
-                # Feature engineering: Summary stats for left/right valgus and asymmetry
+                # Compute simple statistical features for each variable
                 feature_set = {
-                    "valgus_left_mean": df["valgus_angle_left"].mean(),
-                    "valgus_left_max": df["valgus_angle_left"].max(),
-                    "valgus_left_min": df["valgus_angle_left"].min(),
-
-                    "valgus_right_mean": df["valgus_angle_right"].mean(),
-                    "valgus_right_max": df["valgus_angle_right"].max(),
-                    "valgus_right_min": df["valgus_angle_right"].min(),
-
-                    "valgus_asymmetry": abs(df["valgus_angle_left"].mean() - df["valgus_angle_right"].mean()),
-
+                    "vknee_flexion_left_mean": df["vknee_flexion_left"].mean(),
+                    "vknee_flexion_left_std": df["vknee_flexion_left"].std(),
+                    
+                    "knee_flexion_right_mean": df["knee_flexion_right"].mean(),
+                    "knee_flexion_right_std": df["knee_flexion_right"].std(),
+                    
+                    "valgus_ratio_mean": df["valgus_ratio"].mean(),
+                    "valgus_ratio_std": df["valgus_ratio"].std(),
+                    
                     "torso_angle_mean": df["torso_angle"].mean(),
-                    "torso_angle_max": df["torso_angle"].max(),
-                    "torso_angle_min": df["torso_angle"].min(),
-
+                    "torso_angle_std": df["torso_angle"].std(),
+                    
                     "squat_depth_mean": df["squat_depth"].mean(),
-                    "squat_depth_max": df["squat_depth"].max(),
-                    "squat_depth_min": df["squat_depth"].min(),
+                    "squat_depth_std": df["squat_depth"].std(),
+                    
+                    "foot_width_mean": df["foot_width"].mean(),
+                    "foot_width_std": df["foot_width"].std(),
 
                     "label": label
                 }
 
                 all_data.append(feature_set)
 
-# Build final DataFrame and save
+# Convert to DataFrame
 final_df = pd.DataFrame(all_data)
-os.makedirs("preprocessing", exist_ok=True)
-final_df.to_csv("preprocessing/squat_dataset.csv", index=False)
 
-print(f"✅ Successfully processed {len(final_df)} squat samples into squat_dataset.csv!")
+# Save processed dataset
+os.makedirs("preprocessing", exist_ok=True)
+final_df.to_csv("preprocessing/squat_dataset_handcrafted.csv", index=False)
+
+print(f"✅ Handcrafted features extracted for {len(final_df)} squat samples.")

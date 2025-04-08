@@ -106,10 +106,6 @@ def process_video_raw_features(video_path, output_csv):
             frame_data["left_ankle_angle"] = calculate_angle(knee_left, ankle_left, foot_left)
             frame_data["right_ankle_angle"] = calculate_angle(knee_right, ankle_right, foot_right)
 
-            # Trunk angle: between shoulder–hip and vertical-down vector
-            vertical_down = (hip_left[0], hip_left[1] + 0.1, hip_left[2])  # down in image space
-            frame_data["trunk_angle"] = calculate_angle(shoulder_left, hip_left, vertical_down)
-
             data.append(frame_data)
 
         frame_count += 1
@@ -127,7 +123,7 @@ def process_video_raw_features(video_path, output_csv):
 # The output directory is created if it does not exist.
 def process_all_videos():
     """Process only new videos in 'good-new' and 'bad-new' folders."""
-    new_categories = ["good-new", "bad-new"]
+    new_categories = ["dataset-good", "dataset-bad"]
 
     for category in new_categories:
         input_dir = os.path.join(RAW_DATA_DIR, category)

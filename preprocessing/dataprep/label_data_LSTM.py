@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 
 # Paths
 DATA_DIR = "assets/extracted_keypoints"
-OUTPUT_PATH = "preprocessing/squat_sequences_normalized.npz"
+OUTPUT_PATH = "preprocessing/ready/squat_sequences__normalized.npz"
 
 # Label mapping
 categories = {
@@ -16,46 +16,50 @@ categories = {
     "bad-new": 0
 }
 
+# Your handcrafted features (excluding "frame")
+feature_columns = [
+    "vknee_flexion_left",
+    "knee_flexion_right",
+    "valgus_ratio",
+    "torso_angle",
+    "squat_depth",
+    "foot_width"
+]
+
+# Containers
 X_data, y_labels, sequence_lengths = [], [], []
 
-# Step 1: Load sequences
+# Load sequences
 for category, label in categories.items():
     folder = os.path.join(DATA_DIR, category)
     for filename in os.listdir(folder):
         if filename.endswith(".csv"):
-            df = pd.read_csv(os.path.join(folder, filename))
+            file_path = os.path.join(folder, filename)
+            df = pd.read_csv(file_path)
 
-            expected_columns = {
-                "valgus_angle_left", "valgus_angle_right",
-                "torso_angle", "squat_depth"
-            }
-
-            if expected_columns.issubset(df.columns):
-                sequence = df[[
-                    "valgus_angle_left",
-                    "valgus_angle_right",
-                    "torso_angle",
-                    "squat_depth"
-                ]].values.astype("float32")
-
+            if set(feature_columns).issubset(df.columns):
+                sequence = df[feature_columns].values.astype(np.float32)
                 X_data.append(sequence)
                 y_labels.append(label)
                 sequence_lengths.append(len(sequence))
 
-# Step 2: Normalize using MinMaxScaler
-print("📏 Normalizing sequences...")
-all_frames = np.concatenate(X_data, axis=0)
+print(f"📁 Loaded {len(X_data)} sequences.")
+
+# Normalize globally across all frames and features
+print("📏 Applying MinMax normalization...")
+all_frames = np.vstack(X_data)
 scaler = MinMaxScaler()
 scaler.fit(all_frames)
+
 X_normalized = [scaler.transform(seq) for seq in X_data]
 
-# Step 3: Pad sequences
+# Pad sequences to the length of the longest one
 max_len = max(sequence_lengths)
-X_padded = pad_sequences(X_normalized, maxlen=max_len, padding="post", dtype="float32")
+X_padded = pad_sequences(X_normalized, maxlen=max_len, padding="post", dtype=np.float32)
 y_labels = np.array(y_labels, dtype=np.int32)
 
-# Step 4: Save to .npz
+# Save
 np.savez(OUTPUT_PATH, X=X_padded, y=y_labels)
-print(f"✅ Saved normalized sequence data to {OUTPUT_PATH}")
-print(f"   X shape = {X_padded.shape} (samples, seq_len, features)")
-print(f"   y shape = {y_labels.shape} (labels)")
+print(f" Saved normalized padded data to {OUTPUT_PATH}")
+print(f"    X shape: {X_padded.shape} (samples, seq_len, features)")
+print(f"    y shape: {y_labels.shape} (labels)")
