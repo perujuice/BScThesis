@@ -48,6 +48,6 @@ y_labels = np.array(y_labels, dtype=np.int32)
 os.makedirs("preprocessing", exist_ok=True)
 np.savez("preprocessing/squat_sequences_all_features_normalized.npz", X=X_padded, y=y_labels)
 
-print(f"✅ Saved normalized sequence data:")
+print(f" Saved normalized sequence data:")
 print(f"   X shape = {X_padded.shape} (samples, sequence_length, num_features)")
 print(f"   y shape = {y_labels.shape} (samples,)")
