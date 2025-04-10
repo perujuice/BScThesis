@@ -24,16 +24,16 @@
 ## This is the evaluation using all 20 seeds to split the test set 20 times in various ways
 
 ```sh
-Final evaluation over multiple test splits:
-Accuracy  : 0.9588 ± 0.0316
-Precision : 0.9280 ± 0.0488
-Recall    : 0.9960 ± 0.0120
-F1        : 0.9602 ± 0.0294
-Roc_auc   : 0.9844 ± 0.0171
+ Final evaluation over multiple test splits:
+Accuracy  : 0.8784 ± 0.0603
+Precision : 0.8536 ± 0.0825
+Recall    : 0.9220 ± 0.1016
+F1        : 0.8809 ± 0.0629
+Roc_auc   : 0.9566 ± 0.0450
 
-Mean Confusion Matrix (rounded):
-[[24  2]
- [ 0 25]]
+ Mean Confusion Matrix (rounded):
+[[22  4]
+ [ 2 23]]
 ```
 
 ![alt text](figs/fig1.png)
@@ -69,15 +69,15 @@ Mean Confusion Matrix (rounded):
 
 ```sh
  Final evaluation over multiple test splits:
-Accuracy  : 0.9951 ± 0.0085
-Precision : 1.0000 ± 0.0000
-Recall    : 0.9900 ± 0.0173
-F1        : 0.9949 ± 0.0088
-Roc_auc   : 0.9986 ± 0.0027
+Accuracy  : 0.9569 ± 0.0281
+Precision : 0.9564 ± 0.0368
+Recall    : 0.9580 ± 0.0572
+F1        : 0.9555 ± 0.0311
+Roc_auc   : 0.9924 ± 0.0077
 
-🧩 Mean Confusion Matrix (rounded):
-[[26  0]
- [ 0 25]]
+ Mean Confusion Matrix (rounded):
+[[25  1]
+ [ 1 24]]
  ```
 
  ![alt text](figs/fig3.png)
@@ -114,15 +114,15 @@ Roc_auc   : 0.9986 ± 0.0027
 
 ```sh
  Final evaluation over multiple test splits:
-Accuracy  : 0.9971 ± 0.0070
-Precision : 0.9942 ± 0.0137
-Recall    : 1.0000 ± 0.0000
-F1        : 0.9971 ± 0.0070
-Roc_auc   : 1.0000 ± 0.0000
+Accuracy  : 0.9686 ± 0.0235
+Precision : 0.9737 ± 0.0393
+Recall    : 0.9640 ± 0.0307
+F1        : 0.9681 ± 0.0234
+Roc_auc   : 0.9959 ± 0.0051
 
- Mean Confusion Matrix (rounded):
-[[26  0]
- [ 0 25]]
+🧩 Mean Confusion Matrix (rounded):
+[[25  1]
+ [ 1 24]]
  ```
 
 
@@ -157,14 +157,14 @@ Best Parameters: {'max_depth': 9, 'max_features': 'sqrt', 'min_samples_leaf': 1,
 
 ```sh
  Final evaluation over multiple test splits:
-Accuracy  : 0.9912 ± 0.0116
-Precision : 0.9828 ± 0.0223
-Recall    : 1.0000 ± 0.0000
-F1        : 0.9912 ± 0.0115
-Roc_auc   : 0.9992 ± 0.0024
+Accuracy  : 0.9676 ± 0.0279
+Precision : 0.9547 ± 0.0391
+Recall    : 0.9820 ± 0.0296
+F1        : 0.9677 ± 0.0278
+Roc_auc   : 0.9944 ± 0.0062
 
- Mean Confusion Matrix (rounded):
-[[26  0]
+🧩 Mean Confusion Matrix (rounded):
+[[25  1]
  [ 0 25]]
 ```
 
