@@ -36,12 +36,53 @@ Roc_auc   : 0.9566 ± 0.0450
  [ 2 23]]
 ```
 
-![alt text](figs/fig1.png)
-
 ## Finally I included a representation of what features hurt the outcome most by using a technique callsed Permutation Feature Importance for the BiLSTM
 
-![alt text](figs/fig2.png)
 
+# BiLSTM with bio features, but an augmented training set
+
+## Initial step: Augment the training set from the first seed and tune the model
+
+* Augmenting included adding gaussian noise to the original data set, repeated twice so the training set is essentially tripled in volume.
+**Took 324mins**
+
+```sh
+ Best Parameters: {'epochs': 150, 'model__dropout_rate': 0.4, 'model__learning_rate': 0.0003, 'model__lstm_units': 96}
+ Best Cross-Validated Accuracy: 0.9851
+    mean_test_score  std_test_score  \
+49         0.985124        0.019835   
+16         0.985096        0.008103   
+47         0.983471        0.018107   
+53         0.981804        0.024733   
+28         0.981804        0.019126   
+
+                                               params  
+49  {'epochs': 150, 'model__dropout_rate': 0.4, 'm...  
+16  {'epochs': 50, 'model__dropout_rate': 0.4, 'mo...  
+47  {'epochs': 150, 'model__dropout_rate': 0.3, 'm...  
+53  {'epochs': 150, 'model__dropout_rate': 0.4, 'm...  
+28  {'epochs': 100, 'model__dropout_rate': 0.3, 'm...  
+
+```
+
+# The evaluation followed the same procedure as before, but now on each seed we split and augment the training set (80%)
+```sh
+ Final evaluation over multiple test splits:
+Accuracy  : 0.9480 ± 0.0347
+Precision : 0.9431 ± 0.0619
+Recall    : 0.9580 ± 0.0498
+F1        : 0.9481 ± 0.0326
+Roc_auc   : 0.9887 ± 0.0149
+
+ Mean Confusion Matrix (rounded):
+[[24  2]
+ [ 1 24]]
+ ```
+![alt text](figs/cf_lstm_bio_aug.png)
+
+## Permutation feature importance with augmented bio data
+
+![alt text](figs/perm_aug_bio.png)
 
 # BiLSTM with raw features, normalized and padded
 
@@ -80,12 +121,48 @@ Roc_auc   : 0.9924 ± 0.0077
  [ 1 24]]
  ```
 
- ![alt text](figs/fig3.png)
+ # BiLSTM with raw features, but an augmented training set
 
- ## Finally I included a representation of what features hurt the outcome most by using a technique callsed Permutation Feature Importance for the BiLSTM
-- Clearly less interpretable, the features dont tell us much about what went wrong but the model performs extremely well and consistently!
+ ## Initial step: Augment the training set from the first seed and tune the model
 
- ![alt text](figs/fig4.png)
+ ```sh
+  Best Parameters: {'epochs': 50, 'model__dropout_rate': 0.3, 'model__learning_rate': 0.0003, 'model__lstm_units': 96}
+ Best Cross-Validated Accuracy: 1.0000
+
+```
+| mean_test_score | std_test_score | params                                                                 |
+|-----------------|----------------|------------------------------------------------------------------------|
+| 1.000000        | 0.000000       | {'epochs': 50, 'model__dropout_rate': 0.3, 'model__learning_rate': 0.0003, 'model__lstm_units': 96} |
+| 1.000000        | 0.000000       | {'epochs': 50, 'model__dropout_rate': 0.3, 'model__learning_rate': 0.0003, 'model__lstm_units': 128} |
+| 1.000000        | 0.000000       | {'epochs': 50, 'model__dropout_rate': 0.3, 'model__learning_rate': 0.0005, 'model__lstm_units': 96} |
+| 0.998347        | 0.003306       | {'epochs': 50, 'model__dropout_rate': 0.3, 'model__learning_rate': 0.0005, 'model__lstm_units': 128} |
+| 0.998347        | 0.003306       | {'epochs': 50, 'model__dropout_rate': 0.2, 'model__learning_rate': 0.0003, 'model__lstm_units': 96} |
+```
+Total tuning time: 65.74 minutes
+```
+
+## Again The evaluation followed the same procedure as before, but now on each seed we split and augment the training set (80%)
+
+```sh
+ Final evaluation over multiple test splits:
+Accuracy  : 0.9461 ± 0.0231
+Precision : 0.9421 ± 0.0362
+Recall    : 0.9500 ± 0.0307
+F1        : 0.9454 ± 0.0231
+Roc_auc   : 0.9913 ± 0.0067
+
+ Mean Confusion Matrix (rounded):
+[[24  2]
+ [ 1 24]]
+```
+![alt text](figs/cf_lstm_raw_aug.png)
+
+## PCA graph since permutation features don't help much (Im not entirely sure about this yet)
+
+
+![alt text](figs/pca_raw_lstm_aug.png)
+
+
 
 
  # Random forest Experiement
