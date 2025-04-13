@@ -165,6 +165,22 @@ Roc_auc   : 0.9913 ± 0.0067
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
  # Random forest Experiement
 
  ## Original data Bio handcrafted feature hyperparameter tuning grid search 5 fold CV
@@ -197,20 +213,56 @@ Recall    : 0.9640 ± 0.0307
 F1        : 0.9681 ± 0.0234
 Roc_auc   : 0.9959 ± 0.0051
 
-🧩 Mean Confusion Matrix (rounded):
+ Mean Confusion Matrix (rounded):
 [[25  1]
  [ 1 24]]
  ```
 
-
-## Finally I included a representation of what features affect the predictions of bad squats most using SHAP values for the RF
-
-* This is done using the first seed (first 2 digits of pi) that then fix the randomness of the train/test split and will always produce this same result with that seed.
-
-![alt text](figs/fig5.png)
+ ![alt text](figs/fig1.png)
 
 
- ## Original data raw feature hyperparameter tuning grid search 5 fold CV
+# Feature importance with mean shap values
+
+![alt text](figs/shap2.png)
+
+# Bio features with augmented training set
+
+## Augmented training set for biomechanical features hyperparameter tuning grid search 5 fold CV
+* I had to normalize the data here to fairly augment the data! I think this was the best approach but we might need to look into it to confirm it! 
+
+```sh
+Best Parameters: {'max_depth': 9, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 5, 'n_estimators': 300}
+Best Cross-Validated Accuracy: 0.9735
+```
+
+| Accuracy ± Std      | max_depth | max_features | min_samples_leaf | min_samples_split | n_estimators |
+|---------------------|-----------|--------------|------------------|-------------------|--------------|
+| 0.9735 ± 0.0132     | None      | sqrt         | 1                | 5                 | 500          |
+| 0.9735 ± 0.0132     | 14        | log2         | 1                | 5                 | 500          |
+| 0.9735 ± 0.0132     | 9         | log2         | 1                | 5                 | 300          |
+| 0.9735 ± 0.0132     | None      | log2         | 1                | 5                 | 500          |
+| 0.9735 ± 0.0132     | 9         | sqrt         | 1                | 5                 | 300          |
+
+## This is the evaluation using all 20 seeds to split the test set 20 times in various ways
+
+| Metric     | Mean   | Std Deviation |
+|------------|--------|---------|
+| Accuracy   | 0.9735 | 0.0167  |
+| Precision  | 0.9699 | 0.0341  |
+| Recall     | 0.9780 | 0.0236  |
+| F1 Score   | 0.9733 | 0.0166  |
+| ROC AUC    | 0.9973 | 0.0043  |
+
+![alt text](figs/fig1.png)
+
+# Feature importance with mean shap values - bio data aug
+
+![alt text](figs/shap1.png)
+
+
+# Raw data Process! 
+
+ # Original data raw feature hyperparameter tuning grid search 5 fold CV
 
  ```sh
 Best Parameters: {'max_depth': 9, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 10, 'n_estimators': 100}
@@ -244,33 +296,50 @@ Roc_auc   : 0.9944 ± 0.0062
 [[25  1]
  [ 0 25]]
 ```
+* I just put this figure here because they are the same for non aug and aug in terms of the confusion matrix! 
+
+![alt text](figs/cf_rf_raw_aug.png)
+
+## Feature Importance with SHAP values
+![alt text](figs/shap_rf_raw.png)
+
+# Raw data Process! But now with the Augmented training set
+
+
+## Hyperparameter tuning!
+
+```sh
+Best Parameters: {'max_depth': 9, 'max_features': 'log2', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
+
+Best Cross-Validated Accuracy: 0.9934
+```
+
+| Accuracy ± Std Dev | max_depth | max_features | min_samples_leaf | min_samples_split | n_estimators |
+|--------------------|-----------|---------------|------------------|-------------------|--------------|
+| 0.9934 ± 0.0081    | 19        | log2          | 1                | 2                 | 300          |
+| 0.9934 ± 0.0062    | 9         | log2          | 1                | 2                 | 300          |
+| 0.9934 ± 0.0081    | None      | log2          | 1                | 2                 | 300          |
+| 0.9934 ± 0.0081    | 19        | log2          | 1                | 2                 | 500          |
+| 0.9934 ± 0.0081    | None      | log2          | 1                | 2                 | 500          |
 
 
 
+## Evaluation with the test set!
 
 
+| Metric     | Mean   | Std Dev |
+|------------|--------|---------|
+| Accuracy   | 0.9696 | 0.0300  |
+| Precision  | 0.9567 | 0.0405  |
+| Recall     | 0.9840 | 0.0320  |
+| F1 Score   | 0.9697 | 0.0301  |
+| ROC AUC    | 0.9938 | 0.0075  |
+
+![alt text](figs/cf_rf_raw_aug.png)
 
 
+## Feature Importance with SHAP values - Aug data
 
+* For the features here, I grouped them so that for example joint_x, joint_y and joint_z is represented as one feature in the graph (summed up shap values)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# For the raw features I am not sure how to best visually represent them since they are very high dimensional (96 features for x,y,z + min, max, mean, std) but I came accross the t-distributed stochastic neighbor embedding
-
-* Visualizing high-dimensional data in 2 or 3 dimensions, while preserving local structure (i.e., which points are close together)
-
-**This kind of plot could good to show the structure of our data though!** 
-
-![alt text](figs/t-SNE.png)
+![alt text](figs/shap_rf_raw_aug.png)
