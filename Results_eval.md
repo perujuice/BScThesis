@@ -36,8 +36,13 @@ Roc_auc   : 0.9566 ± 0.0450
  [ 2 23]]
 ```
 
-## Finally I included a representation of what features hurt the outcome most by using a technique callsed Permutation Feature Importance for the BiLSTM
+![alt text](figs/cf_lstm_bio.png)
 
+## Finally I included a representation of what features hurt the preformance most by using a technique called Permutation Feature Importance for the BiLSTM
+
+* SHAP wont work with the BiLSTM since it seems to not be supported! 
+
+![alt text](figs/permutation_bio.png)
 
 # BiLSTM with bio features, but an augmented training set
 
@@ -82,7 +87,7 @@ Roc_auc   : 0.9887 ± 0.0149
 
 ## Permutation feature importance with augmented bio data
 
-![alt text](figs/perm_aug_bio.png)
+![alt text](figs/permutation_bio_aug.png)
 
 # BiLSTM with raw features, normalized and padded
 
@@ -121,6 +126,13 @@ Roc_auc   : 0.9924 ± 0.0077
  [ 1 24]]
  ```
 
+## I dont feel that I need to plot the confusion matrix here because the same plot exists a little but further down in this doc!
+
+## Permutation feature importance, grouped (x, y, z) coordinates by joint
+
+![alt text](figs/permuatation_raw.png)
+
+
  # BiLSTM with raw features, but an augmented training set
 
  ## Initial step: Augment the training set from the first seed and tune the model
@@ -157,8 +169,11 @@ Roc_auc   : 0.9913 ± 0.0067
 ```
 ![alt text](figs/cf_lstm_raw_aug.png)
 
-## PCA graph since permutation features don't help much (Im not entirely sure about this yet)
+## Permutation feature importance for raw augmented data, grouped (x, y, z) coordinates by joint
 
+![alt text](figs/permutation_raw_aug.png)
+
+## PCA graph might be cool, or t-SNE... but they are unsupervised learning techniques and have more to do with how the data looks rather than model performance.
 
 ![alt text](figs/pca_raw_lstm_aug.png)
 
@@ -186,8 +201,8 @@ Roc_auc   : 0.9913 ± 0.0067
  ## Original data Bio handcrafted feature hyperparameter tuning grid search 5 fold CV
 
  ```sh
- ✅ Best Parameters: {'max_depth': 6, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
-✅ Best Cross-Validated Accuracy: 0.9552
+  Best Parameters: {'max_depth': 6, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
+ Best Cross-Validated Accuracy: 0.9552
      mean_test_score  std_test_score  \
 191         0.955244        0.018649   
 272         0.955244        0.018649   
@@ -292,7 +307,7 @@ Recall    : 0.9820 ± 0.0296
 F1        : 0.9677 ± 0.0278
 Roc_auc   : 0.9944 ± 0.0062
 
-🧩 Mean Confusion Matrix (rounded):
+ Mean Confusion Matrix (rounded):
 [[25  1]
  [ 0 25]]
 ```
