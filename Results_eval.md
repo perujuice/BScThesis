@@ -201,21 +201,23 @@ Roc_auc   : 0.9913 ± 0.0067
  ## Original data Bio handcrafted feature hyperparameter tuning grid search 5 fold CV
 
  ```sh
-  Best Parameters: {'max_depth': 6, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
- Best Cross-Validated Accuracy: 0.9552
+Best Parameters: {'max_depth': 9, 'max_features': 'sqrt', 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 300}
+ Best Cross-Validated Accuracy: 0.9701
      mean_test_score  std_test_score  \
-191         0.955244        0.018649   
-272         0.955244        0.018649   
-245         0.955244        0.018649   
-244         0.955244        0.018649   
-164         0.955244        0.018649   
+163         0.970122        0.010064   
+109         0.970122        0.010064   
+82          0.970122        0.010064   
+190         0.970122        0.010064   
+271         0.970122        0.010064   
 
                                                 params  
-191  {'max_depth': 10, 'max_features': 'log2', 'min...  
-272  {'max_depth': None, 'max_features': 'log2', 'm...  
-245  {'max_depth': None, 'max_features': 'sqrt', 'm...  
-244  {'max_depth': None, 'max_features': 'sqrt', 'm...  
-164  {'max_depth': 10, 'max_features': 'sqrt', 'min...
+163  {'max_depth': 14, 'max_features': 'sqrt', 'min...  
+109  {'max_depth': 9, 'max_features': 'log2', 'min_...  
+82   {'max_depth': 9, 'max_features': 'sqrt', 'min_...  
+190  {'max_depth': 14, 'max_features': 'log2', 'min...  
+271  {'max_depth': None, 'max_features': 'log2', 'm...  
+
+Elapsed time: 8.65 minutes
 ```
 
 ## This is the evaluation using all 20 seeds to split the test set 20 times in various ways
