@@ -40,8 +40,6 @@ Roc_auc   : 0.9566 ± 0.0450
 
 ## Finally I included a representation of what features hurt the preformance most by using a technique called Permutation Feature Importance for the BiLSTM
 
-* SHAP wont work with the BiLSTM since it seems to not be supported! 
-
 ![alt text](figs/permutation_bio.png)
 
 # BiLSTM with bio features, but an augmented training set
@@ -238,9 +236,9 @@ Roc_auc   : 0.9959 ± 0.0051
  ![alt text](figs/fig1.png)
 
 
-# Feature importance with mean shap values
+# Feature importance
 
-![alt text](figs/shap2.png)
+![alt text](figs/perm_rf_bio.png)
 
 # Bio features with augmented training set
 
@@ -272,9 +270,9 @@ Best Cross-Validated Accuracy: 0.9735
 
 ![alt text](figs/fig1.png)
 
-# Feature importance with mean shap values - bio data aug
+# Feature importance - bio data aug
 
-![alt text](figs/shap1.png)
+![alt text](figs/perm_rf_bio_aug.png)
 
 
 # Raw data Process! 
@@ -317,8 +315,8 @@ Roc_auc   : 0.9944 ± 0.0062
 
 ![alt text](figs/cf_rf_raw_aug.png)
 
-## Feature Importance with SHAP values
-![alt text](figs/shap_rf_raw.png)
+## Feature Importance
+![alt text](figs/per_rf_raw.png)
 
 # Raw data Process! But now with the Augmented training set
 
@@ -355,8 +353,8 @@ Best Cross-Validated Accuracy: 0.9934
 ![alt text](figs/cf_rf_raw_aug.png)
 
 
-## Feature Importance with SHAP values - Aug data
+## Feature Importance - Aug raw data
 
-* For the features here, I grouped them so that for example joint_x, joint_y and joint_z is represented as one feature in the graph (summed up shap values)
+* For the features here, I grouped them so that for example joint_x, joint_y and joint_z is represented as one feature in the graph
 
-![alt text](figs/shap_rf_raw_aug.png)
+![alt text](figs/per_rf_raw_aug.png)
