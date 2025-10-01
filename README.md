@@ -1,9 +1,8 @@
 # BScThesis
 
+This is the codebase for the experimental machine learning pipeline, developed specifically for the squat technique assessment and a comparative evaluation of a random forest ensamble and BiLSTM deep learning model.
 
-# Missing data in raw data (bad77 doesnt exist, good15 and good68 dont exist )
-
-## 🏋️‍♂️ Squat Form Analysis with OpenPose & Machine Learning
+## 🏋️‍♂️ Squat Form Analysis with MediaPipe & Machine Learning
 
 This project uses **Machine Learning**, and **Computer Vision (Mediapipe)** to analyze squat form. The environment is set up using venv virtual environment to ensure reproducibility by containing all dependencies in there so that we can easily work together.
 
